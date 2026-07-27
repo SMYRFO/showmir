@@ -1,10 +1,12 @@
 
 from fastapi import FastAPI
-from app.routes import users, setup_db, admins
+from app.routes import users, setup_db, admins, tests
 
 app = FastAPI(
     title="showmir",
 )
+
+app.include_router(tests.router)
 app.include_router(users.router)
 app.include_router(setup_db.router)
 app.include_router(admins.router)

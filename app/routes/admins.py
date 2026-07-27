@@ -34,7 +34,7 @@ async def admin_login(token: str, response: Response, session: SessionDep):
     
 
 @router.get("/check_role", dependencies=[Depends(security.access_token_required)])
-async def check_admin_role(session: SessionDep, request: Request):
+async def check_admin_role(request: Request):
     role = get_current_admin_role(request)
     return {"role": role}
 
@@ -122,3 +122,15 @@ async def change_user_balance(user_id: int, session: SessionDep, request:Request
             return {"message": "Admin price empty"}
     else:
         return {"error": "Admin not found"}
+
+
+@router.get("/check_price")
+async def check_price(session: SessionDep, request: Request):
+    current_uid = get_current_admin_uid(request)
+    query = select(Admin_Model).where(Admin_Model.id == current_uid)
+    result = await session.execute(query)
+    admin = result.scalar_one_or_none()
+    if admin: 
+        return {"ok": "True", "Admin token": {admin.token}, "Admin price": {admin.price}}
+    else:
+        return {"ok": "False"}
